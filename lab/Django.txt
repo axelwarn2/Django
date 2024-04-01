@@ -1,0 +1,112 @@
+1. Создание проекта на базе фреймворка Django
+	1. Создание виртуальной среды env
+	Если у вас установлен Python, используйте следующие команды в командной строке PowerShell (для Windows):
+	Для Windows (PowerShell):
+		python -m venv env  # Создание виртуальной среды
+		env\Scripts\Activate.ps1  # Активация виртуальной среды
+	2. Создание проекта Django
+		django-admin startproject project  # Создание проекта с именем "project"
+		cd project  # Переход в папку проекта
+	3. Создание приложения news
+	python manage.py startapp news  # Создание приложения с именем "news"
+	4. Создание шаблона article.html
+	В папке news (нового приложения) создайте папку templates/news.
+	В этой папке создайте файл article.html и разработайте шаблон по вашим требованиям.
+
+	Добавление маршрутизации
+	Отредактируйте файл urls.py внутри вашего приложения (news/urls.py) для добавления маршрутизации:
+		from django.contrib import admin
+		from django.urls import path
+		from news import views
+
+		urlpatterns = [
+    			path('', views.home),
+    			path('news/', views.article),
+    			path('admin/', admin.site.urls),
+		]
+
+	Создание представления (view)
+	В файле views.py вашего приложения (news/views.py) создайте представление для отображения шаблона article.html:
+		from django.shortcuts import render
+		from django.http import HttpResponse
+
+		def home(request):
+    			return HttpResponse('Hello world!')
+		def article(request):
+    			return render(request, 'news/article.html')
+
+	Запуск сервера
+	Используйте команду для запуска локального сервера Django:
+		python manage.py runserver
+
+
+2. Создание моделей в проекте Django
+	1. Создание модели Article
+	Отредактируйте файл models.py в приложении news:
+		from django.db import models
+
+		class Article(models.Model):
+    		title = models.CharField(max_length=200)
+    		keywords = models.CharField(max_length=200)
+    		annotation = models.TextField()
+    		rubNum = models.IntegerField()
+
+    		def __str__(self):
+        		return self.title  # Возвращает название статьи при обращении к объекту
+
+	2. Заполнение базы данных данными из text.csv
+	Создайте скрипт Python:
+	Создайте новый файл Python, например, import_data.py, в корневой директории вашего Django проекта или где-то внутри приложения news. Затем вставьте код для 	импорта данных из CSV-файла и создания объектов модели Article, как указано ранее:
+		import os
+		import django
+		import pandas as pd	
+
+		os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')  # Укажите полный путь к вашему settings.py
+
+		django.setup()
+
+		from news.models import Article
+
+		def import_data():
+    			data = pd.read_csv('D:\\Lessons\\Django\\lab\\project\\text.csv', delimiter=';')
+
+    			for index, row in data.iterrows():
+        			Article.objects.create(
+            				title=row['title'],
+            				keywords=row['keywords'],
+            				annotation=row['annotation'],
+            				rubNum=row['rubNum']
+        			)
+
+		if __name__ == "__main__":
+    		import_data()
+
+	Создайте миграции для ваших моделей:
+		python manage.py makemigrations news
+	Примените миграции к базе данных:
+		python manage.py migrate
+
+	После этого попробуйте снова запустить скрипт import-csv.py.
+
+	3. Тестовые запросы к таблице с использованием shell Django
+	Запустите shell Django для выполнения запросов к базе данных:
+		cd project
+		python manage.py shell
+	Примеры запросов:
+		from news.models import Article
+		# Получение одной записи по ключу (например, id=1)
+		article = Article.objects.get(id=1)
+		print(article.title)
+
+		# Получение нескольких записей
+		articles = Article.objects.filter(rubNum=2)  # Фильтрация по полю rubNum=2
+		for a in articles:
+    			print(a.title)
+
+		# Фильтрация по значениям нескольких полей
+		articles_filtered = Article.objects.filter(rubNum=2, keywords__icontains='sequence')
+		for a in articles_filtered:
+    			print(a.title)
+
+
+

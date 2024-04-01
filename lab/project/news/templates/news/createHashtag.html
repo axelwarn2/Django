@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Работа с хэштегами</title>
+  <link rel="stylesheet" href="{% static 'stylesheets/foundation.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/main.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/app.css' %}">
+  <script src="{% static 'javascripts/modernizr.foundation.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'fonts/ligature.css' %}">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Playfair+Display:400italic' rel='stylesheet' type='text/css' />
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+</head>
+<body>
+<nav>
+     <div class="twelve columns header_nav">
+     <div class="row">
+        <ul id="menu-header" class="nav-bar horizontal">
+          <li><a href="{% url 'news:index' %}">Главная</a></li>
+        </ul>
+      </div>
+      </div>
+</nav>
+<form method="post">
+    <p>Название хэштега</p>
+    {% csrf_token %}
+    {{ form.title }}
+    <button type="submit">Добавить хэштег</button>
+</form>
+  <ul>
+    {% for hashtag in hashtags %}
+      <li>
+        {{ hashtag.title }}
+            <a href="{% url 'news:delete_hashtag' hashtag.id %}">Удалить</a>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
